@@ -1,5 +1,5 @@
 FROM node:12 as frontendBuilder
-COPY . /app
+COPY ./ui /app/ui
 RUN cd /app/ui && npm install && npm run build
 
 FROM adoptopenjdk/openjdk11 as backendBuilder
