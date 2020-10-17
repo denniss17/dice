@@ -23,7 +23,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "rm -Rf ../src/main/resources/static && react-scripts build && cp -R ./build/ ../src/main/resources/static",
+    "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
