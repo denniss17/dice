@@ -11,5 +11,5 @@ FROM adoptopenjdk/openjdk11 as runner
 COPY --from=backendBuilder /app/build/libs/ /app
 
 EXPOSE 8080
-ENTRYPOINT ["java", "-jar", "/app/*.jar"]
+ENTRYPOINT ["java", "-jar", "/app/dice-0.0.1.jar"]
 
