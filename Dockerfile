@@ -8,8 +8,8 @@ COPY --from=frontendBuilder /app/ui/build/ /app/src/main/resources/static
 RUN cd /app && ./gradlew build
 
 FROM adoptopenjdk/openjdk11 as runner
-COPY --from=backendBuilder /app/build/libs /app/build/libs
+COPY --from=backendBuilder /app/build/libs/ /app
 
 EXPOSE 8080
-ENTRYPOINT ["java", "-jar", "/app/build/libs/*.jar"]
+ENTRYPOINT ["java", "-jar", "/app/*.jar"]
 
