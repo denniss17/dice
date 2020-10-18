@@ -27,15 +27,23 @@ interface DiceState {
 }
 
 const App: FunctionComponent = () => {
+    // State
     const [name, setName] = useState<string>(["Anoniem", "Naamloos", "Ongenoemd", "Onbekend"][Math.floor(Math.random() * 3)]);
     const [dice, setDice] = useState<DiceState>({d6count: 1});
     const [connected, setConnected] = useState<boolean>(false);
     const [client, setClient] = useState<Client | null>(null);
     const [diceThrows, setDiceThrows] = useState<Array<DiceThrow>>([]);
 
+    // References
     const diceThrowCallback = useRef<((diceThrow: DiceThrow) => void)>(() => {
     });
 
+    // Effects
+    /**
+     * Update the callback when the array of dice throws changes.
+     *
+     * This is necessary because otherwise the callback is always scoped to the initial (empty) array.
+     */
     useEffect(() => {
         diceThrowCallback.current = (diceThrow: DiceThrow) => {
             console.info("New throw", diceThrow, diceThrows);
@@ -43,7 +51,9 @@ const App: FunctionComponent = () => {
         };
     }, [diceThrows])
 
-    // Create client on first render
+    /**
+     * Create STOMP-client on first render
+     */
     useEffect(() => {
         const client = Stomp.over(new SockJS('/ws') as WebSocket);
 
@@ -55,7 +65,9 @@ const App: FunctionComponent = () => {
         setClient(client);
     }, []);
 
-    // Create subscription on client connection
+    /**
+     * Create subscription when client is connected.
+     */
     useEffect(() => {
         if (client != null && client.connected) {
             const subscription = client.subscribe('/topic/throws', function (message) {
@@ -75,8 +87,11 @@ const App: FunctionComponent = () => {
         }
     }, [client, connected])
 
+    // Functions
+    /**
+     * Throw one or more dice by sending a message to the backend.
+     */
     function throwDice() {
-
         const intent: DiceThrowIntent = {
             name,
             dice: Array.from({length: dice.d6count}).map(() => Die.D6)
@@ -105,8 +120,17 @@ const App: FunctionComponent = () => {
         <div className="App">
             <div className="container">
                 <div className="row">
+                    <div className="col-12 mt-4">
+                        <div className="d-flex flex-row justify-content-between align-items-center">
+                            <h1>Dobbelstenen</h1>
+                            <span className={"badge badge-pill " + (connected ? "badge-success" : "badge-danger")}>
+                                {connected ? "Online" : "Offline"}
+                            </span>
+                        </div>
+                    </div>
+
                     <div className="col-12 col-lg-6">
-                        <div className="card mt-5">
+                        <div className="card mt-4">
                             <div className="card-body">
                                 <h5 className="card-title">Gooien</h5>
 
@@ -122,17 +146,17 @@ const App: FunctionComponent = () => {
                                                value={dice.d6count}
                                                onChange={onD6CountChange}/>
                                     </div>
-                                    <button onClick={throwDice} disabled={!connected} type="button" className="btn btn-primary">Gooi</button>
+                                    <button onClick={throwDice} disabled={!connected} type="button"
+                                            className="btn btn-primary">Gooi
+                                    </button>
                                 </form>
                             </div>
                         </div>
                     </div>
                     <div className="col-12 col-lg-6">
-                        <div className="card mt-5">
+                        <div className="card mt-4">
                             <div className="card-body">
                                 <h5 className="card-title">
-                                    <span
-                                        className={connected ? "badge badge-pill badge-success mr-2" : "badge badge-pill badge-danger mr-2"}>&nbsp;</span>
                                     <span className="mr-auto">Resultaten</span>
                                 </h5>
 
